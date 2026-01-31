@@ -1,478 +1,476 @@
 // Global State
 let currentPage = 'home';
-let isDarkMode = true;
-let mobileMenuOpen = false;
+let isDarkMode = false;
 let demandChart = null;
 let updateInterval = null;
 
-// Metro Data
-const metroLines = [
-    { id: 1, name: 'Red Line', color: '#EF4444', stations: ['Central Station', 'Tech Park', 'University', 'Mall Junction', 'Airport'] },
-    { id: 2, name: 'Blue Line', color: '#3B82F6', stations: ['Harbor Point', 'Business District', 'Central Station', 'Sports Complex', 'West End'] },
-    { id: 3, name: 'Green Line', color: '#10B981', stations: ['North Terminal', 'Museum', 'Central Station', 'Garden Plaza', 'South Bay'] },
-    { id: 4, name: 'Yellow Line', color: '#F59E0B', stations: ['East Gate', 'Market Square', 'Central Station', 'Convention Center', 'Lakeside'] }
+// STATION DATA
+const metroStations = [
+    "Aluva", "Pulinchodu", "Companypady", "Ambattukavu", "Muttom", 
+    "Kalamassery", "Cochin University", "Pathadipalam", "Edapally", 
+    "Changampuzha Park", "Palarivattom", "JLN Stadium", "Kaloor", 
+    "Town Hall", "M.G Road", "Maharaja's College", "Ernakulam South", 
+    "Kadavanthra", "Elamkulam", "Vyttila", "Thaikoodam", "Petta", 
+    "Vadakkekotta", "SN Junction", "Tripunithura Terminal"
 ];
 
-const alerts = [
-    { id: 1, type: 'high', message: 'High passenger demand predicted at Central Station (18:00-19:00)' },
-    { id: 2, type: 'medium', message: 'Weather alert: Light rain expected, minor delays possible' },
-    { id: 3, type: 'low', message: 'AI optimization increased frequency on Blue Line by 25%' }
+// 1. HARDCODED DATA FROM YOUR PYTHON MODEL (OPERATIONAL HOURS ONLY: 06:00 - 23:00)
+const modelOutputData = [
+    { hour: "6", demand: 250, freq: 10 },   // Operations Start
+    { hour: "7", demand: 380, freq: 10 },
+    { hour: "8", demand: 475, freq: 5 },    // Morning Peak
+    { hour: "9", demand: 460, freq: 5 },    // Morning Peak
+    { hour: "10", demand: 410, freq: 5 },   // Morning Peak
+    { hour: "11", demand: 320, freq: 10 },
+    { hour: "12", demand: 280, freq: 10 },
+    { hour: "13", demand: 290, freq: 10 },
+    { hour: "14", demand: 310, freq: 10 },
+    { hour: "15", demand: 340, freq: 10 },
+    { hour: "16", demand: 390, freq: 10 },
+    { hour: "17", demand: 445, freq: 5 },   // Evening Peak
+    { hour: "18", demand: 480, freq: 5 },   // Evening Peak
+    { hour: "19", demand: 450, freq: 5 },   // Evening Peak
+    { hour: "20", demand: 360, freq: 10 },
+    { hour: "21", demand: 220, freq: 10 },
+    { hour: "22", demand: 140, freq: 15 },
+    { hour: "23", demand: 80, freq: 15 }    // Last Train
 ];
 
-const performanceMetrics = {
-    onTimePerformance: 94.2,
-    averageWaitTime: 3.8,
-    passengerSatisfaction: 4.6,
-    systemEfficiency: 91.5
-};
-
-// Data Generation Functions
+// GENERATE CHART DATA (Fills gaps for closed hours)
 function generateDemandData() {
-    const data = [];
-    for (let hour = 0; hour < 24; hour++) {
-        const isPeak = (hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19);
-        const baseValue = isPeak ? 800 : 100;
-        data.push({
-            hour: `${hour}:00`,
-            predicted: Math.floor(Math.random() * 500 + baseValue),
-            actual: Math.floor(Math.random() * 500 + baseValue),
-            capacity: 1200
-        });
+    const fullDayData = [];
+    for(let i=0; i<24; i++) {
+        // Find if this hour exists in our model output
+        const found = modelOutputData.find(d => parseInt(d.hour) === i);
+        
+        if(found) {
+            // Operational Hour
+            fullDayData.push({
+                hour: `${i}:00`,
+                predicted: found.demand,
+                actual: found.demand + Math.floor(Math.random() * 40 - 20),
+                capacity: 1000
+            });
+        } else {
+            // Non-Operational (Metro Closed)
+            fullDayData.push({
+                hour: `${i}:00`,
+                predicted: 0,
+                actual: 0,
+                capacity: 0
+            });
+        }
     }
-    return data;
+    return fullDayData;
 }
 
-function generateTrainSchedule() {
-    const trains = ['T-101', 'T-102', 'T-103', 'T-104', 'T-105'];
-    return trains.map((train, idx) => ({
-        id: train,
-        line: ['Red', 'Blue', 'Green', 'Yellow'][idx % 4],
-        lineColor: [metroLines[0].color, metroLines[1].color, metroLines[2].color, metroLines[3].color][idx % 4],
-        nextStation: ['Central Station', 'Tech Park', 'Museum', 'Mall Junction'][idx % 4],
-        eta: `${2 + idx} min`,
-        status: idx === 2 ? 'Delayed' : 'On Time',
-        occupancy: Math.floor(Math.random() * 40 + 60)
-    }));
+// SIMULATION STATE
+let liveTrains = [];
+
+function initializeTrains() {
+    liveTrains = [];
+    liveTrains.push(createTrain('KM-101', 0, 1, 'At Station'));   
+    liveTrains.push(createTrain('KM-103', 8, 1, 'Moving'));       
+    liveTrains.push(createTrain('KM-105', 16, 1, 'At Station'));  
+    liveTrains.push(createTrain('KM-202', 24, -1, 'At Station')); 
+    liveTrains.push(createTrain('KM-204', 16, -1, 'Moving'));     
+    liveTrains.push(createTrain('KM-206', 7, -1, 'Moving'));      
 }
 
-function getAllStations() {
-    const stations = new Set();
-    metroLines.forEach(line => {
-        line.stations.forEach(station => stations.add(station));
-    });
-    return Array.from(stations).sort();
+function createTrain(id, idx, dir, status) {
+    return {
+        id: id,
+        currentIndex: idx,
+        direction: dir,
+        status: status,
+        progress: 0,
+        occupancy: Math.floor(Math.random() * 60 + 20)
+    };
 }
 
-// Page Navigation
-function showPage(pageName) {
-    currentPage = pageName;
-    
-    // Hide all pages
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Show selected page
-    const pageElement = document.getElementById(pageName + 'Page');
-    if (pageElement) {
-        pageElement.classList.add('active');
-    }
-    
-    // Update navigation active state
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.page === pageName) {
-            link.classList.add('active');
+function updateSimulation() {
+    const speed = 5; 
+    liveTrains.forEach(train => {
+        if (train.status === 'At Station') {
+            if (Math.random() > 0.6) { 
+                train.status = 'Moving';
+                train.progress = 0;
+            }
+        } else {
+            train.progress += speed;
+            if (train.progress >= 100) {
+                train.currentIndex += train.direction;
+                train.status = 'At Station';
+                train.progress = 0;
+                if (train.currentIndex >= metroStations.length - 1) {
+                    train.direction = -1; 
+                    train.currentIndex = metroStations.length - 1;
+                } else if (train.currentIndex <= 0) {
+                    train.direction = 1; 
+                    train.currentIndex = 0;
+                }
+            }
         }
     });
+    updateMapVisuals();
+    updateLiveStatusBox();
+}
+
+function updateMapVisuals() {
+    const container = document.getElementById('trainMarkers');
+    if (!container) return;
+    const mapTop = 30;
+    const mapBottom = 620;
+    const totalHeight = mapBottom - mapTop;
+    const segmentHeight = totalHeight / (metroStations.length - 1);
+    let svgContent = '';
     
-    document.querySelectorAll('.nav-link-mobile').forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.page === pageName) {
-            link.classList.add('active');
+    liveTrains.forEach(train => {
+        let visualY;
+        const currentY = mapTop + (train.currentIndex * segmentHeight);
+        if (train.status === 'Moving') {
+            const nextIdx = train.currentIndex + train.direction;
+            const nextY = mapTop + (nextIdx * segmentHeight);
+            const diff = nextY - currentY;
+            visualY = currentY + (diff * (train.progress / 100));
+        } else {
+            visualY = currentY;
+        }
+        svgContent += `
+            <circle cx="200" cy="${visualY}" r="8" fill="#ef4444" stroke="#fff" stroke-width="2">
+                <title>${train.id}</title>
+            </circle>
+            <text x="215" y="${visualY + 4}" fill="#ef4444" font-size="10" font-weight="bold">${train.id}</text>
+        `;
+    });
+    container.innerHTML = svgContent;
+}
+
+function updateLiveStatusBox() {
+    const statusText = document.getElementById('trainLocationText');
+    const etaText = document.getElementById('userEtaText');
+    const userFrom = document.getElementById('fromStation').value;
+    const userTo = document.getElementById('toStation').value;
+
+    if (!statusText) return;
+
+    if (!userFrom || !userTo || userFrom === userTo) {
+        statusText.textContent = "System Active";
+        etaText.textContent = `Tracking ${liveTrains.length} active trains on the Blue Line.`;
+        return;
+    }
+
+    const fromIdx = metroStations.indexOf(userFrom);
+    const toIdx = metroStations.indexOf(userTo);
+    const userDir = (toIdx > fromIdx) ? 1 : -1; 
+
+    let nearestTrain = null;
+    let minDistance = Infinity;
+
+    liveTrains.forEach(train => {
+        if (train.direction !== userDir) return;
+        let distance = -1;
+        if (userDir === 1) {
+            if (train.currentIndex <= fromIdx) {
+                distance = fromIdx - train.currentIndex;
+                if (train.status === 'Moving') distance -= (train.progress/100);
+            }
+        } else {
+            if (train.currentIndex >= fromIdx) {
+                distance = train.currentIndex - fromIdx;
+                if (train.status === 'Moving') distance -= (train.progress/100);
+            }
+        }
+        if (distance >= 0 && distance < minDistance) {
+            minDistance = distance;
+            nearestTrain = train;
         }
     });
-    
-    // Initialize page-specific features
-    if (pageName === 'demo') {
-        initializeDemoPage();
-    }
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
-// Theme Toggle
-function toggleTheme() {
-    isDarkMode = !isDarkMode;
-    document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
-    
-    // Update chart if it exists
-    if (demandChart) {
-        updateChartColors();
-    }
-}
-
-// Mobile Menu Toggle
-function toggleMobileMenu() {
-    mobileMenuOpen = !mobileMenuOpen;
-    const mobileMenu = document.getElementById('mobileMenu');
-    const menuIcon = document.querySelector('.menu-icon');
-    const closeIcon = document.querySelector('.close-icon');
-    
-    if (mobileMenuOpen) {
-        mobileMenu.style.display = 'block';
-        menuIcon.style.display = 'none';
-        closeIcon.style.display = 'block';
+    if (nearestTrain) {
+        const minsAway = Math.ceil(minDistance * 3);
+        statusText.textContent = `Next Train: ${nearestTrain.id}`;
+        statusText.style.color = "var(--primary-color)"; 
+        if (minsAway <= 0) {
+            etaText.textContent = "Train is Arriving / At Platform!";
+            etaText.style.color = "var(--success-color)";
+        } else {
+            etaText.textContent = `Arriving in approx ${minsAway} mins (${Math.floor(minDistance)} stops away)`;
+            etaText.style.color = "var(--text-primary)";
+        }
     } else {
-        mobileMenu.style.display = 'none';
-        menuIcon.style.display = 'block';
-        closeIcon.style.display = 'none';
+        statusText.textContent = "Waiting for Train...";
+        statusText.style.color = "var(--text-secondary)";
+        etaText.textContent = "No train currently approaching.";
     }
 }
 
-// Initialize Demo Page
-function initializeDemoPage() {
-    renderAlerts();
-    renderMetroLines();
-    renderTrainSchedule();
-    renderDemandChart();
-    populateStationSelects();
-    renderMetrics();
-    initializeSliders();
-    
-    // Start auto-update
-    if (updateInterval) {
-        clearInterval(updateInterval);
-    }
-    updateInterval = setInterval(() => {
-        renderTrainSchedule();
-        updateDemandChart();
-    }, 10000); // Update every 10 seconds
-}
-
-// Render Alerts
-function renderAlerts() {
-    const container = document.getElementById('alertsContainer');
-    if (!container) return;
-    
-    container.innerHTML = alerts.map(alert => `
-        <div class="alert alert-${alert.type}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <div>${alert.message}</div>
-        </div>
-    `).join('');
-}
-
-// Render Metro Lines
-function renderMetroLines() {
-    const container = document.getElementById('metroLines');
-    if (!container) return;
-    
-    container.innerHTML = metroLines.map(line => `
-        <button class="metro-line" style="background-color: ${line.color}; opacity: 0.7;">
-            ${line.name}
-        </button>
-    `).join('');
-}
-
-// Render Train Schedule
 function renderTrainSchedule() {
     const container = document.getElementById('trainSchedule');
     if (!container) return;
-    
-    const trains = generateTrainSchedule();
-    
-    container.innerHTML = trains.map(train => `
+    const sortedTrains = [...liveTrains].sort((a,b) => a.id.localeCompare(b.id));
+    container.innerHTML = sortedTrains.map(train => {
+        let locText = train.status === 'At Station' ? `Stopped at ${metroStations[train.currentIndex]}` : `Moving to ${metroStations[train.currentIndex + train.direction]}`;
+        const dirText = train.direction === 1 ? "Tripunithura ⬇" : "Aluva ⬆";
+        return `
         <div class="train-item">
             <div class="train-header">
                 <div class="train-info">
-                    <div class="train-line-indicator" style="background-color: ${train.lineColor}"></div>
                     <span class="train-id">${train.id}</span>
-                    <span class="train-line-name">${train.line} Line</span>
+                    <span class="train-line-name" style="color:var(--primary-color)">${dirText}</span>
                 </div>
-                <span class="train-status ${train.status === 'On Time' ? 'status-ontime' : 'status-delayed'}">
-                    ${train.status}
+                <span class="train-status ${train.status === 'At Station' ? 'status-ontime' : 'status-delayed'}">
+                    ${train.status === 'At Station' ? 'Boarding' : 'Moving'}
                 </span>
             </div>
             <div class="train-details">
-                <div class="train-destination">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-                    </svg>
-                    <span>${train.nextStation}</span>
-                </div>
-                <div class="train-meta">
-                    <span>ETA: <strong class="train-eta">${train.eta}</strong></span>
-                    <div class="train-occupancy">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        <div class="occupancy-bar">
-                            <div class="occupancy-fill" style="width: ${train.occupancy}%; background-color: ${
-                                train.occupancy > 80 ? '#ef4444' : 
-                                train.occupancy > 60 ? '#f59e0b' : '#22c55e'
-                            }"></div>
-                        </div>
-                        <span class="occupancy-text">${train.occupancy}%</span>
-                    </div>
-                </div>
+                <div>${locText}</div>
+                <div>Load: ${train.occupancy}%</div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
-// Render Demand Chart
 function renderDemandChart() {
     const canvas = document.getElementById('demandChart');
     if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
     const data = generateDemandData();
+    if (demandChart) demandChart.destroy();
     
-    if (demandChart) {
-        demandChart.destroy();
-    }
-    
+    const lineColor = isDarkMode ? '#0ea5e9' : '#5E6C5B'; 
+    const fillColor = isDarkMode ? 'rgba(14, 165, 233, 0.1)' : 'rgba(94, 108, 91, 0.1)';
+    const gridColor = isDarkMode ? '#334155' : '#D6E0E2';
+
     demandChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: data.map(d => d.hour),
             datasets: [
                 {
-                    label: 'AI Predicted',
+                    label: 'Predicted Load',
                     data: data.map(d => d.predicted),
-                    borderColor: '#0ea5e9',
-                    backgroundColor: isDarkMode ? 'rgba(14, 165, 233, 0.1)' : 'rgba(14, 165, 233, 0.05)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Actual Flow',
-                    data: data.map(d => d.actual),
-                    borderColor: '#22c55e',
-                    backgroundColor: isDarkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.05)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Capacity',
-                    data: data.map(d => d.capacity),
-                    borderColor: '#ef4444',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0
+                    borderColor: lineColor,
+                    backgroundColor: fillColor,
+                    fill: true
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: isDarkMode ? '#334155' : '#e2e8f0'
-                    },
-                    ticks: {
-                        color: isDarkMode ? '#64748b' : '#64748b'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: isDarkMode ? '#334155' : '#e2e8f0'
-                    },
-                    ticks: {
-                        color: isDarkMode ? '#64748b' : '#64748b'
-                    }
-                }
+                y: { grid: { color: gridColor } },
+                x: { grid: { color: gridColor } }
             }
         }
     });
 }
 
-// Update Chart Colors
-function updateChartColors() {
-    if (!demandChart) return;
-    
-    demandChart.options.plugins.legend.labels.color = isDarkMode ? '#94a3b8' : '#64748b';
-    demandChart.options.scales.y.grid.color = isDarkMode ? '#334155' : '#e2e8f0';
-    demandChart.options.scales.y.ticks.color = isDarkMode ? '#64748b' : '#64748b';
-    demandChart.options.scales.x.grid.color = isDarkMode ? '#334155' : '#e2e8f0';
-    demandChart.options.scales.x.ticks.color = isDarkMode ? '#64748b' : '#64748b';
-    
-    demandChart.data.datasets[0].backgroundColor = isDarkMode ? 'rgba(14, 165, 233, 0.1)' : 'rgba(14, 165, 233, 0.05)';
-    demandChart.data.datasets[1].backgroundColor = isDarkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.05)';
-    
-    demandChart.update();
-}
-
-// Update Demand Chart
-function updateDemandChart() {
-    if (!demandChart) return;
-    
-    const data = generateDemandData();
-    demandChart.data.datasets[0].data = data.map(d => d.predicted);
-    demandChart.data.datasets[1].data = data.map(d => d.actual);
-    demandChart.update();
-}
-
-// Populate Station Selects
 function populateStationSelects() {
-    const stations = getAllStations();
     const fromSelect = document.getElementById('fromStation');
     const toSelect = document.getElementById('toStation');
-    
-    if (!fromSelect || !toSelect) return;
-    
-    const optionsHTML = '<option value="">Select station</option>' + 
-        stations.map(station => `<option value="${station}">${station}</option>`).join('');
-    
+    if (!fromSelect || fromSelect.options.length > 1) return;
+    const optionsHTML = '<option value="">Select Station</option>' + 
+        metroStations.map(s => `<option value="${s}">${s}</option>`).join('');
     fromSelect.innerHTML = optionsHTML;
     toSelect.innerHTML = optionsHTML;
+    fromSelect.addEventListener('change', updateLiveStatusBox);
+    toSelect.addEventListener('change', updateLiveStatusBox);
 }
 
-// Handle Journey Form
 function handleJourneyForm(e) {
     e.preventDefault();
-    
-    const fromStation = document.getElementById('fromStation').value;
-    const toStation = document.getElementById('toStation').value;
+    const from = document.getElementById('fromStation').value;
+    const to = document.getElementById('toStation').value;
     const resultDiv = document.getElementById('journeyResult');
-    
-    if (!fromStation || !toStation) return;
-    
+    if (!from || !to || from === to) {
+        alert("Please select different stations.");
+        return;
+    }
+    const stops = Math.abs(metroStations.indexOf(to) - metroStations.indexOf(from));
+    const time = stops * 3; 
+    let price = 10;
+    if (stops > 17) price = 60;
+    else if (stops > 12) price = 50;
+    else if (stops > 8) price = 40;
+    else if (stops > 5) price = 30;
+    else if (stops > 2) price = 20;
     resultDiv.style.display = 'block';
     resultDiv.innerHTML = `
-        <div class="journey-header">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>Estimated Journey</span>
-        </div>
         <div class="journey-info">
-            <p><strong>Duration:</strong> 18 minutes</p>
-            <p><strong>Wait Time:</strong> 3 minutes</p>
-            <p><strong>Transfers:</strong> 1</p>
-            <p><strong>Route:</strong> ${fromStation} → Central Station → ${toStation}</p>
+            <p><strong>Route:</strong> ${from} ➝ ${to}</p>
+            <p><strong>Stops:</strong> ${stops}</p>
+            <p><strong>Time:</strong> ${time} mins</p>
+            <p><strong>Fare:</strong> ₹${price}</p>
         </div>
     `;
+    updateLiveStatusBox();
 }
 
-// Render Metrics
-function renderMetrics() {
-    const container = document.getElementById('metricsGrid');
-    if (!container) return;
-    
-    const metrics = [
-        { label: 'On-Time %', value: performanceMetrics.onTimePerformance, color: '#22c55e', suffix: '%' },
-        { label: 'Avg Wait', value: performanceMetrics.averageWaitTime, color: '#0ea5e9', suffix: ' min' },
-        { label: 'Satisfaction', value: performanceMetrics.passengerSatisfaction, color: '#f59e0b', suffix: '/5', max: 5 },
-        { label: 'Efficiency', value: performanceMetrics.systemEfficiency, color: '#8b5cf6', suffix: '%' }
-    ];
-    
-    container.innerHTML = metrics.map(metric => {
-        const percentage = metric.max ? (metric.value / metric.max) * 100 : metric.value;
-        return `
-            <div class="metric-item">
-                <div class="metric-label">${metric.label}</div>
-                <div class="metric-value" style="color: ${metric.color}">
-                    ${metric.value}${metric.suffix}
-                </div>
-                <div class="metric-bar">
-                    <div class="metric-fill" style="width: ${percentage}%; background-color: ${metric.color}"></div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// Initialize Sliders
-function initializeSliders() {
-    const peakSlider = document.getElementById('peakSlider');
-    const offPeakSlider = document.getElementById('offPeakSlider');
-    const peakValue = document.getElementById('peakValue');
-    const offPeakValue = document.getElementById('offPeakValue');
-    const recommendation = document.getElementById('aiRecommendation');
-    
-    if (!peakSlider || !offPeakSlider) return;
-    
-    peakSlider.addEventListener('input', (e) => {
-        peakValue.textContent = `${e.target.value} minutes`;
-    });
-    
-    offPeakSlider.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        offPeakValue.textContent = `${value} minutes`;
-        
-        const recommendedValue = Math.max(value + 2, 10);
-        recommendation.textContent = `Based on predicted demand, reduce off-peak frequency to ${recommendedValue} minutes to optimize energy consumption while maintaining service quality.`;
-    });
-}
-
-// Handle Contact Form
-function handleContactForm(e) {
-    e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
-    e.target.reset();
-}
-
-// Initialize Application
 function initializeApp() {
-    // Set initial theme
-    document.body.className = 'dark-mode';
-    
-    // Add event listeners
+    document.body.className = 'light-mode';
+    isDarkMode = false;
     const journeyForm = document.getElementById('journeyForm');
-    if (journeyForm) {
-        journeyForm.addEventListener('submit', handleJourneyForm);
-    }
-    
+    if (journeyForm) journeyForm.addEventListener('submit', handleJourneyForm);
     const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', handleContactForm);
-    }
-    
-    // Show home page
+    if (contactForm) contactForm.addEventListener('submit', (e) => { e.preventDefault(); alert("Message Sent!"); });
     showPage('home');
 }
 
-// Run on DOM load
+function showPage(pageName) {
+    currentPage = pageName;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageName + 'Page').classList.add('active');
+    if (pageName === 'demo') initializeDemoPage();
+}
+
+function initializeDemoPage() {
+    initializeTrains();
+    renderDemandChart();
+    populateStationSelects();
+    if(currentUser) renderAdminPanel();
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = setInterval(() => {
+        updateSimulation();
+        renderTrainSchedule();
+    }, 500);
+}
+
+function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+    if (demandChart) renderDemandChart();
+}
+
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
 }
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (updateInterval) {
-        clearInterval(updateInterval);
+// LOGIN & ADMIN LOGIC
+let currentUser = null;
+let currentAiPrediction = 0;
+
+function openLoginModal() {
+    document.getElementById('loginModal').style.display = 'block';
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target == modal) {
+        modal.style.display = "none";
     }
-    if (demandChart) {
-        demandChart.destroy();
+}
+
+const loginForm = document.getElementById('loginForm');
+if(loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const role = document.getElementById('userRole').value;
+        if (user === 'admin' && pass === 'admin123' && role === 'admin') {
+            currentUser = { name: 'Admin User', role: 'admin' };
+            loginSuccess();
+        } else if (user === 'user' && pass === 'user123') {
+            currentUser = { name: 'Station Master', role: 'user' };
+            alert("Logged in as Station Master. View-only access.");
+            closeLoginModal();
+            updateLoginUI();
+        } else {
+            alert("Invalid Credentials! (Try: admin / admin123)");
+        }
+    });
+}
+
+function loginSuccess() {
+    alert("Admin Access Granted.\nAI Control Panel Unlocked.");
+    closeLoginModal();
+    updateLoginUI();
+    renderAdminPanel();
+    generateAiPrediction(); 
+}
+
+function updateLoginUI() {
+    const btn = document.getElementById('loginBtn');
+    if (currentUser) {
+        btn.textContent = `Logout (${currentUser.role})`;
+        btn.onclick = logout;
+    } else {
+        btn.textContent = 'Login';
+        btn.onclick = openLoginModal;
     }
-});
+}
+
+function logout() {
+    currentUser = null;
+    const adminInterface = document.getElementById('adminInterface');
+    const adminLocked = document.getElementById('adminLockedMsg');
+    if(adminInterface) adminInterface.style.display = 'none';
+    if(adminLocked) adminLocked.style.display = 'block';
+    updateLoginUI();
+    alert("Logged Out.");
+}
+
+function renderAdminPanel() {
+    if (currentUser && currentUser.role === 'admin') {
+        const adminLocked = document.getElementById('adminLockedMsg');
+        const adminInterface = document.getElementById('adminInterface');
+        if(adminLocked) adminLocked.style.display = 'none';
+        if(adminInterface) adminInterface.style.display = 'block';
+    }
+}
+
+function generateAiPrediction() {
+    const statusText = document.getElementById('aiReasoning');
+    const valueText = document.getElementById('aiPredictedValue');
+    if(!statusText || !valueText) return;
+
+    valueText.innerHTML = '<span style="font-size:1.5rem">Syncing...</span>';
+    statusText.textContent = "Fetching latest batch predictions...";
+    
+    setTimeout(() => {
+        // Randomly sample from our model output data for the demo
+        const randomHourIdx = Math.floor(Math.random() * modelOutputData.length);
+        const dataPoint = modelOutputData[randomHourIdx];
+
+        currentAiPrediction = dataPoint.freq;
+        valueText.textContent = `${currentAiPrediction} mins`;
+        
+        let reason = "";
+        if(dataPoint.demand > 400) {
+            reason = `High Demand (${dataPoint.demand} pax) at ${dataPoint.hour}:00. Maximizing frequency.`;
+        } else if (dataPoint.demand > 200) {
+            reason = `Moderate flow (${dataPoint.demand} pax) at ${dataPoint.hour}:00. Standard schedule.`;
+        } else {
+            reason = `Low traffic (${dataPoint.demand} pax) at ${dataPoint.hour}:00. Energy saving mode.`;
+        }
+        statusText.textContent = `AI Insight: ${reason}`;
+    }, 1000);
+}
+
+function approvePrediction() {
+    const display = document.getElementById('currentSystemFreq');
+    if(display) {
+        display.textContent = `Running at ${currentAiPrediction} min intervals (AI Optimized)`;
+        display.style.color = "var(--success-color)";
+    }
+    alert(`System Update:\nHeadway set to ${currentAiPrediction} minutes.`);
+}
+
+function rejectPrediction() {
+    if (window.confirm("Disagree with AI? Re-evaluate?")) {
+        generateAiPrediction();
+    }
+}

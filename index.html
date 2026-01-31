@@ -3,202 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metro Intelligence Platform - AI-Powered Urban Transit Management</title>
+    <title>Kochi Metro Intelligence - AI Transit Platform</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="dark-mode">
-    <!-- Navigation -->
+<body class="light-mode">
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
                 <div class="nav-logo" onclick="showPage('home')">
                     <div class="logo-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="8" width="18" height="12" rx="2"/>
-                            <path d="M3 14h18"/>
-                            <path d="M7 8V6"/>
-                            <path d="M17 8V6"/>
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                            <path d="M9 4v16" />
+                            <path d="M15 4v16" />
+                            <line x1="4" y1="12" x2="20" y2="12" />
                         </svg>
                     </div>
-                    <span class="logo-text">Metro Intelligence</span>
+                    <span class="logo-text">Kochi Metro AI</span>
                 </div>
 
                 <div class="nav-menu desktop-menu">
-                    <button class="nav-link" onclick="showPage('home')" data-page="home">
-                        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                            <polyline points="9 22 9 12 15 12 15 22"/>
-                        </svg>
-                        Home
-                    </button>
-                    <button class="nav-link" onclick="showPage('demo')" data-page="demo">
-                        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 3 19 12 5 21 5 3"/>
-                        </svg>
-                        Live Demo
-                    </button>
-                    <button class="nav-link" onclick="showPage('about')" data-page="about">
-                        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="16" x2="12" y2="12"/>
-                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                        </svg>
-                        About
-                    </button>
-                    <button class="nav-link" onclick="showPage('ai-model')" data-page="ai-model">
-                        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                            <path d="M12 14a7 7 0 0 0 7-7"/>
-                            <path d="M5 7a7 7 0 0 0 7 7"/>
-                            <path d="M12 14v8"/>
-                        </svg>
-                        AI Model
-                    </button>
-                    <button class="nav-link" onclick="showPage('contact')" data-page="contact">
-                        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        Contact
-                    </button>
+                    <button class="nav-link" onclick="showPage('home')" data-page="home">Home</button>
+                    <button class="nav-link" onclick="showPage('demo')" data-page="demo">Live Dashboard</button>
+                    <button class="nav-link" onclick="showPage('ai-model')" data-page="ai-model">AI Insights</button>
+                    <button class="nav-link" onclick="showPage('contact')" data-page="contact">Team</button>
                 </div>
 
                 <div class="nav-actions">
+                    <button id="loginBtn" class="btn btn-sm" onclick="openLoginModal()" style="margin-right: 10px; border: 1px solid var(--card-border); padding: 0.5rem 1rem; background: transparent; color: var(--text-primary);">Login</button>
+                    
                     <button class="theme-toggle" onclick="toggleTheme()">
-                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"/>
-                            <line x1="12" y1="1" x2="12" y2="3"/>
-                            <line x1="12" y1="21" x2="12" y2="23"/>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                            <line x1="1" y1="12" x2="3" y2="12"/>
-                            <line x1="21" y1="12" x2="23" y2="12"/>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                        </svg>
-                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                        </svg>
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                     </button>
                     <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="3" y1="12" x2="21" y2="12"/>
-                            <line x1="3" y1="6" x2="21" y2="6"/>
-                            <line x1="3" y1="18" x2="21" y2="18"/>
-                        </svg>
-                        <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
+                        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                        <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
             </div>
 
             <div class="mobile-menu" id="mobileMenu" style="display: none;">
-                <button class="nav-link-mobile" onclick="showPage('home'); toggleMobileMenu();" data-page="home">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    </svg>
-                    Home
-                </button>
-                <button class="nav-link-mobile" onclick="showPage('demo'); toggleMobileMenu();" data-page="demo">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3"/>
-                    </svg>
-                    Live Demo
-                </button>
-                <button class="nav-link-mobile" onclick="showPage('about'); toggleMobileMenu();" data-page="about">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                    </svg>
-                    About
-                </button>
-                <button class="nav-link-mobile" onclick="showPage('ai-model'); toggleMobileMenu();" data-page="ai-model">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                    </svg>
-                    AI Model
-                </button>
-                <button class="nav-link-mobile" onclick="showPage('contact'); toggleMobileMenu();" data-page="contact">
-                    <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    </svg>
-                    Contact
-                </button>
+                <button class="nav-link-mobile" onclick="showPage('home'); toggleMobileMenu();">Home</button>
+                <button class="nav-link-mobile" onclick="showPage('demo'); toggleMobileMenu();">Live Dashboard</button>
+                <button class="nav-link-mobile" onclick="showPage('ai-model'); toggleMobileMenu();">AI Insights</button>
+                <button class="nav-link-mobile" onclick="showPage('contact'); toggleMobileMenu();">Team</button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main id="mainContent">
-        <!-- Home Page -->
         <div id="homePage" class="page active">
             <div class="hero-section">
                 <div class="container">
                     <div class="hero-content">
                         <div class="hero-badge">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                                <line x1="6" y1="6" x2="6.01" y2="6"/>
-                                <line x1="6" y1="18" x2="6.01" y2="18"/>
-                            </svg>
-                            <span>AI-Powered Transit Management</span>
+                            <span>Blue Line Operations Live</span>
                         </div>
-
-                        <h1 class="hero-title">Metro Intelligence Platform</h1>
-                        <p class="hero-subtitle">Optimize urban transit with predictive analytics and intelligent scheduling</p>
-
+                        <h1 class="hero-title">Kochi Metro Intelligence</h1>
+                        <p class="hero-subtitle">Optimizing the Aluva-Tripunithura corridor with predictive AI analytics.</p>
                         <div class="hero-buttons">
-                            <button class="btn btn-primary" onclick="showPage('demo')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="5 3 19 12 5 21 5 3"/>
-                                </svg>
-                                Live Demo
-                            </button>
-                            <button class="btn btn-secondary" onclick="showPage('about')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="12" y1="16" x2="12" y2="12"/>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                                </svg>
-                                Learn More
-                            </button>
+                            <button class="btn btn-primary" onclick="showPage('demo')">Open Dashboard</button>
+                            <button class="btn btn-secondary" onclick="showPage('ai-model')">View AI Model</button>
                         </div>
                     </div>
 
                     <div class="feature-grid">
                         <div class="feature-card">
-                            <div class="feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                                    <path d="M12 14a7 7 0 0 0 7-7"/>
-                                    <path d="M5 7a7 7 0 0 0 7 7"/>
-                                </svg>
-                            </div>
                             <h3>AI Demand Prediction</h3>
-                            <p>LSTM models predict passenger flow with 95% accuracy</p>
+                            <p>Forecasting passenger flow for all 25 stations.</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                                </svg>
-                            </div>
-                            <h3>Dynamic Scheduling</h3>
-                            <p>Real-time optimization reduces wait times by 40%</p>
+                            <h3>Smart Scheduling</h3>
+                            <p>Real-time frequency adjustment for the Blue Line.</p>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                                </svg>
-                            </div>
                             <h3>Live Monitoring</h3>
-                            <p>Track all trains and stations in real-time</p>
+                            <p>Tracking active trains from Aluva to Tripunithura.</p>
                         </div>
                     </div>
                 </div>
@@ -208,123 +92,78 @@
                 <div class="container">
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                            </div>
-                            <div class="stat-value">2.5M+</div>
+                            <div class="stat-value">100k+</div>
                             <div class="stat-label">Daily Passengers</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="8" width="18" height="12" rx="2"/>
-                                    <path d="M3 14h18"/>
-                                </svg>
-                            </div>
-                            <div class="stat-value">4</div>
-                            <div class="stat-label">Metro Lines</div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-label">Active Line (Blue)</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                            </div>
-                            <div class="stat-value">48</div>
+                            <div class="stat-value">25</div>
                             <div class="stat-label">Stations</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                                    <path d="M12 14a7 7 0 0 0 7-7"/>
-                                </svg>
-                            </div>
-                            <div class="stat-value">95%</div>
-                            <div class="stat-label">AI Accuracy</div>
+                            <div class="stat-value">98%</div>
+                            <div class="stat-label">On-Time Reliability</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Demo Page -->
         <div id="demoPage" class="page">
             <div class="container page-container">
-                <h1 class="page-title">Live System Dashboard</h1>
+                <h1 class="page-title">Live Operations Dashboard</h1>
 
-                <!-- Alerts -->
                 <div class="alerts-container" id="alertsContainer"></div>
 
-                <!-- Dashboard Grid -->
                 <div class="dashboard-grid">
-                    <!-- Metro Map -->
                     <div class="card">
-                        <h2 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                <circle cx="12" cy="10" r="3"/>
-                            </svg>
-                            Interactive Metro Network
-                        </h2>
-                        <div class="metro-map" id="metroMap">
-                            <svg viewBox="0 0 400 300" width="100%" height="100%">
-                                <!-- Metro Lines -->
-                                <line x1="50" y1="150" x2="350" y2="150" stroke="#EF4444" stroke-width="8"/>
-                                <line x1="200" y1="50" x2="200" y2="250" stroke="#3B82F6" stroke-width="8"/>
-                                <line x1="100" y1="80" x2="300" y2="220" stroke="#10B981" stroke-width="8"/>
-                                <line x1="100" y1="220" x2="300" y2="80" stroke="#F59E0B" stroke-width="8"/>
+                        <h2 class="card-title">Blue Line Live Tracking</h2>
+                        
+                        <div class="live-status-box" id="liveStatusBox" style="background: rgba(94, 108, 91, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--primary-color);">
+                            <div style="font-size: 1.1rem; font-weight: bold; color: var(--primary-color); margin-bottom: 5px;">
+                                <span id="trainLocationText">Network Status: Normal</span>
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                                <span id="userEtaText">6 Trains currently active on the Blue Line.</span>
+                            </div>
+                        </div>
+
+                        <div class="metro-map" id="metroMap" style="overflow-y: auto; text-align: center;">
+                            <svg viewBox="0 0 400 650" width="100%" height="600" id="mapSvg">
+                                <line x1="200" y1="30" x2="200" y2="620" stroke="var(--primary-color)" stroke-width="8" stroke-linecap="round"/>
                                 
-                                <!-- Central Station -->
-                                <circle cx="200" cy="150" r="20" fill="#ffffff" stroke="#334155" stroke-width="3"/>
-                                <text x="200" y="190" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="bold">Central</text>
+                                <circle cx="200" cy="30" r="10" fill="var(--bg-secondary)" stroke="var(--primary-color)" stroke-width="4"/>
+                                <text x="225" y="35" fill="currentColor" font-size="14" font-weight="bold">Aluva</text>
                                 
-                                <!-- Other Stations -->
-                                <circle cx="50" cy="150" r="12" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
-                                <text x="50" y="175" text-anchor="middle" fill="#ffffff" font-size="10">West</text>
+                                <circle cx="200" cy="620" r="10" fill="var(--bg-secondary)" stroke="var(--primary-color)" stroke-width="4"/>
+                                <text x="225" y="625" fill="currentColor" font-size="14" font-weight="bold">Tripunithura</text>
+
+                                <circle cx="200" cy="150" r="6" fill="var(--text-primary)" stroke="var(--primary-color)" stroke-width="2"/>
+                                <text x="185" y="155" text-anchor="end" fill="currentColor" font-size="12">Edapally</text>
+
+                                <circle cx="200" cy="300" r="8" fill="var(--bg-secondary)" stroke="var(--primary-color)" stroke-width="3"/>
+                                <text x="185" y="305" text-anchor="end" fill="currentColor" font-size="12" font-weight="bold">M.G Road</text>
+
+                                <circle cx="200" cy="450" r="8" fill="var(--bg-secondary)" stroke="var(--primary-color)" stroke-width="3"/>
+                                <text x="185" y="455" text-anchor="end" fill="currentColor" font-size="12" font-weight="bold">Vyttila Hub</text>
                                 
-                                <circle cx="350" cy="150" r="12" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
-                                <text x="350" y="175" text-anchor="middle" fill="#ffffff" font-size="10">East</text>
-                                
-                                <circle cx="200" cy="50" r="12" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
-                                <text x="200" y="40" text-anchor="middle" fill="#ffffff" font-size="10">North</text>
-                                
-                                <circle cx="200" cy="250" r="12" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
-                                <text x="200" y="270" text-anchor="middle" fill="#ffffff" font-size="10">South</text>
+                                <g id="trainMarkers"></g>
                             </svg>
                         </div>
-                        <div class="metro-lines" id="metroLines"></div>
                     </div>
 
-                    <!-- Train Schedule -->
                     <div class="card">
-                        <h2 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="8" width="18" height="12" rx="2"/>
-                                <path d="M3 14h18"/>
-                            </svg>
-                            Live Train Status
-                        </h2>
+                        <h2 class="card-title">Live Departures</h2>
                         <div class="train-schedule" id="trainSchedule"></div>
                     </div>
                 </div>
 
-                <!-- AI Prediction and Journey Planner -->
                 <div class="dashboard-grid-3">
                     <div class="card card-span-2">
-                        <h2 class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                                <polyline points="17 6 23 6 23 12"/>
-                            </svg>
-                            AI Passenger Demand Prediction
-                        </h2>
+                        <h2 class="card-title">Blue Line Demand Forecast</h2>
                         <canvas id="demandChart"></canvas>
                     </div>
 
@@ -332,286 +171,164 @@
                         <h2 class="card-title-small">Journey Planner</h2>
                         <form class="journey-form" id="journeyForm">
                             <div class="form-group">
-                                <label>From</label>
-                                <select id="fromStation">
-                                    <option value="">Select station</option>
-                                </select>
+                                <label>From (Your Location)</label>
+                                <select id="fromStation"></select>
                             </div>
                             <div class="form-group">
-                                <label>To</label>
-                                <select id="toStation">
-                                    <option value="">Select station</option>
-                                </select>
+                                <label>To (Destination)</label>
+                                <select id="toStation"></select>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                    <polyline points="12 5 19 12 12 19"/>
-                                </svg>
-                                Find Best Route
-                            </button>
+                            <button type="submit" class="btn btn-primary btn-block">Find Route</button>
                         </form>
                         <div class="journey-result" id="journeyResult" style="display: none;"></div>
                     </div>
                 </div>
 
-                <!-- Admin Dashboard -->
-                <div class="card">
-                    <h2 class="card-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v6m0 6v6m5.3-13v6m0 6v6m5.3-13v6m0 6v6M1.3 5v6m0 6v6"/>
+                <div class="card" id="adminControlPanel">
+                    <h2 class="card-title">AI Scheduler Admin Panel</h2>
+                    
+                    <div id="adminLockedMsg" style="text-align: center; padding: 2rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
-                        Dynamic Scheduler - AI Control
-                    </h2>
-                    <div class="admin-grid">
-                        <div class="admin-section">
-                            <h3 class="section-title">Frequency Control</h3>
-                            <div class="slider-group">
-                                <div class="slider-item">
-                                    <div class="slider-label">
-                                        <span>Peak Hours Frequency</span>
-                                        <span class="slider-value" id="peakValue">3 minutes</span>
-                                    </div>
-                                    <input type="range" class="slider" id="peakSlider" min="2" max="10" value="3">
-                                </div>
-                                <div class="slider-item">
-                                    <div class="slider-label">
-                                        <span>Off-Peak Hours Frequency</span>
-                                        <span class="slider-value" id="offPeakValue">8 minutes</span>
-                                    </div>
-                                    <input type="range" class="slider" id="offPeakSlider" min="5" max="20" value="8">
-                                </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Admin access required to modify train frequency.</p>
+                        <button class="btn btn-primary" onclick="openLoginModal()">Login as Admin</button>
+                    </div>
+
+                    <div id="adminInterface" style="display: none;">
+                        <div class="ai-decision-box">
+                            <div class="prediction-display">
+                                <span class="label" style="color:var(--text-secondary); font-size: 0.9rem;">AI Suggested Headway</span>
+                                <span class="value" id="aiPredictedValue">-- mins</span>
                             </div>
-                            <div class="ai-recommendation">
-                                <div class="recommendation-header">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                                    </svg>
-                                    <span>AI Recommendation</span>
-                                </div>
-                                <p id="aiRecommendation">Based on predicted demand, reduce off-peak frequency to 10 minutes to optimize energy consumption while maintaining service quality.</p>
+                            
+                            <div class="prediction-status">
+                                <p id="aiReasoning">Analyzing real-time passenger density...</p>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-danger" onclick="rejectPrediction()">
+                                    Disagree (Re-predict)
+                                </button>
+                                <button class="btn btn-success" onclick="approvePrediction()" style="background-color: var(--success-color); color: white; border: none;">
+                                    Agree (Apply)
+                                </button>
                             </div>
                         </div>
-                        <div class="admin-section">
-                            <h3 class="section-title">System Performance Metrics</h3>
-                            <div class="metrics-grid" id="metricsGrid"></div>
+
+                        <div class="current-stats" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--card-border);">
+                            <div style="font-size: 0.9rem; color: var(--text-secondary);">Current System Status:</div>
+                            <div style="font-weight: bold; color: var(--primary-color);" id="currentSystemFreq">Running at 7 min intervals</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- About Page -->
-        <div id="aboutPage" class="page">
+        <div id="ai-modelPage" class="page">
             <div class="container page-container page-narrow">
-                <h1 class="page-title">About the Project</h1>
+                <h1 class="page-title">AI Model Intelligence</h1>
+                
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h2 class="card-title">Model Selection: LSTM vs. ARIMA</h2>
+                    <p class="text-content" style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        We selected <strong>Long Short-Term Memory (LSTM)</strong> over traditional ARIMA for the Kochi Metro Blue Line.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div style="background: rgba(239, 68, 68, 0.05); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.2);">
+                            <h4 style="color: var(--danger-color); margin-bottom: 0.5rem;">Why not ARIMA?</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">ARIMA is linear and struggles with complex, non-linear patterns like sudden sports events or variable weather impacts common in Kochi.</p>
+                        </div>
+                        <div style="background: rgba(94, 108, 91, 0.1); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--primary-color);">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Why LSTM?</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">LSTM networks natively handle non-linear time-series data and can "remember" long-term dependencies (e.g., weekly rush hour trends).</p>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="content-section">
+                <div class="dashboard-grid">
                     <div class="card">
-                        <h2 class="card-title-small">Vision & Mission</h2>
-                        <p class="text-content">The AI-Powered Metro Planner & Scheduler represents the future of urban transit management. By leveraging cutting-edge machine learning and real-time data analytics, we're revolutionizing how cities manage their metro systems. Our mission is to reduce wait times, optimize energy consumption, and enhance passenger experience through intelligent automation.</p>
+                        <h2 class="card-title-small">Current Model Architecture</h2>
+                        <div class="model-architecture">
+                            <div class="model-layer">
+                                <div class="layer-title">Input Sequence</div>
+                                <div class="layer-desc">Look-back window of previous 24 hours.</div>
+                                <div class="tech-tag">Shape: (Batch, 24, 1)</div>
+                            </div>
+                            <div class="model-layer">
+                                <div class="layer-title">LSTM Layer</div>
+                                <div class="layer-desc">50 Neurons with ReLU activation.</div>
+                                <div class="tech-tag">Units: 50</div>
+                            </div>
+                            <div class="model-layer">
+                                <div class="layer-title">Dense Output</div>
+                                <div class="layer-desc">Single neuron predicting next hour's load.</div>
+                                <div class="tech-tag">Prediction: passenger_count</div>
+                            </div>
+                            <div class="model-layer">
+                                <div class="layer-title">Logic Gate</div>
+                                <div class="layer-desc">Threshold-based Frequency Assignment.</div>
+                                <div class="tech-tag">if > 400: 5min, else: 15min</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card">
-                        <h2 class="card-title-small">Key Features</h2>
-                        <ul class="feature-list">
-                            <li>Real-time passenger demand prediction using LSTM neural networks</li>
-                            <li>Dynamic train scheduling based on AI optimization algorithms</li>
-                            <li>Interactive metro map with live train tracking</li>
-                            <li>Intelligent journey planning with multi-modal route optimization</li>
-                            <li>Predictive maintenance alerts using anomaly detection</li>
-                            <li>Energy-efficient operations through smart frequency management</li>
+                        <h2 class="card-title-small">Model Configuration</h2>
+                        <ul class="feature-list" style="margin-bottom: 1.5rem;">
+                            <li><strong>Optimizer:</strong> Adam (Adaptive Moment Estimation)</li>
+                            <li><strong>Loss Function:</strong> Mean Squared Error (MSE)</li>
+                            <li><strong>Epochs:</strong> 20 (Early Stopping Enabled)</li>
+                            <li><strong>Normalization:</strong> MinMaxScaler (0-1 range)</li>
                         </ul>
-                    </div>
 
-                    <div class="card">
-                        <h2 class="card-title-small">Technology Stack</h2>
-                        <div class="tech-grid">
-                            <div class="tech-item">
-                                <div class="tech-category">Frontend</div>
-                                <div class="tech-name">HTML5, CSS3, JavaScript</div>
+                        <h3 class="card-title-small">Performance</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-item" style="border: 1px solid var(--card-border);">
+                                <div class="metric-label">Training Loss</div>
+                                <div class="metric-value">0.0035</div>
                             </div>
-                            <div class="tech-item">
-                                <div class="tech-category">Backend</div>
-                                <div class="tech-name">Node.js, Express, WebSocket</div>
+                            <div class="metric-item" style="border: 1px solid var(--card-border);">
+                                <div class="metric-label">Prediction Horizon</div>
+                                <div class="metric-value">24 Hours</div>
                             </div>
-                            <div class="tech-item">
-                                <div class="tech-category">AI/ML</div>
-                                <div class="tech-name">TensorFlow, LSTM, Prophet</div>
-                            </div>
-                            <div class="tech-item">
-                                <div class="tech-category">Data</div>
-                                <div class="tech-name">MongoDB, Redis, TimescaleDB</div>
+                            <div class="metric-item" style="border: 1px solid var(--card-border);">
+                                <div class="metric-label">Accuracy</div>
+                                <div class="metric-value">~92%</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- AI Model Page -->
-        <div id="aiModelPage" class="page">
-            <div class="container page-container page-narrow">
-                <h1 class="page-title">AI Model Architecture</h1>
-
-                <div class="content-section">
-                    <div class="card">
-                        <h2 class="card-title-small">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                            </svg>
-                            Demand Prediction Model
-                        </h2>
-                        <p class="text-content">Our passenger demand prediction system uses a stacked LSTM (Long Short-Term Memory) architecture with attention mechanisms:</p>
-                        <div class="code-block">
-                            <pre>Model Architecture:
-├── Input Layer (features: 48)
-│   └── Time, Day, Weather, Events, Historical Data
-├── LSTM Layer 1 (128 units, return_sequences=True)
-├── Dropout (0.3)
-├── LSTM Layer 2 (64 units)
-├── Attention Layer
-├── Dense (32, activation='relu')
-├── Dense (1, activation='linear')
-└── Output: Predicted Passenger Count
-
-Training Metrics:
-- MAE: 42.3 passengers
-- RMSE: 67.8 passengers
-- R² Score: 0.947
-- Training Time: 2.3 hours</pre>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2 class="card-title-small">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                            </svg>
-                            Dynamic Scheduling Algorithm
-                        </h2>
-                        <p class="text-content">The AI scheduler uses reinforcement learning (Q-Learning) to optimize train frequency:</p>
-                        <div class="process-steps">
-                            <div class="process-step">
-                                <div class="step-number">1</div>
-                                <div class="step-content">
-                                    <div class="step-title">State Observation</div>
-                                    <div class="step-desc">Current passenger load, time of day, historical patterns</div>
-                                </div>
-                            </div>
-                            <div class="process-step">
-                                <div class="step-number">2</div>
-                                <div class="step-content">
-                                    <div class="step-title">Action Selection</div>
-                                    <div class="step-desc">Adjust frequency (increase/decrease/maintain)</div>
-                                </div>
-                            </div>
-                            <div class="process-step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">
-                                    <div class="step-title">Reward Calculation</div>
-                                    <div class="step-desc">Minimize wait time + energy cost + crowding penalty</div>
-                                </div>
-                            </div>
-                            <div class="process-step">
-                                <div class="step-number">4</div>
-                                <div class="step-content">
-                                    <div class="step-title">Policy Update</div>
-                                    <div class="step-desc">Q-table update using Bellman equation</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2 class="card-title-small">Feature Engineering</h2>
-                        <div class="tech-grid">
-                            <div class="tech-item">
-                                <div class="tech-category">Temporal</div>
-                                <ul class="feature-sublist">
-                                    <li>Hour</li>
-                                    <li>Day</li>
-                                    <li>Month</li>
-                                    <li>Season</li>
-                                    <li>Holiday</li>
-                                </ul>
-                            </div>
-                            <div class="tech-item">
-                                <div class="tech-category">Environmental</div>
-                                <ul class="feature-sublist">
-                                    <li>Weather</li>
-                                    <li>Temperature</li>
-                                    <li>Events</li>
-                                    <li>Alerts</li>
-                                </ul>
-                            </div>
-                            <div class="tech-item">
-                                <div class="tech-category">Historical</div>
-                                <ul class="feature-sublist">
-                                    <li>7-day avg</li>
-                                    <li>30-day trend</li>
-                                    <li>YoY growth</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact Page -->
+        
         <div id="contactPage" class="page">
             <div class="container page-container page-narrow">
-                <h1 class="page-title">Team & Contact</h1>
-
+                <h1 class="page-title">Meet the Team</h1>
                 <div class="contact-grid">
                     <div class="card">
-                        <h2 class="card-title-small">Project Team</h2>
-                        <div class="team-list">
+                        <h2 class="card-title-small">Project Developers</h2>
+                        <div class="team-list" style="display: flex; flex-direction: column; gap: 20px;">
                             <div class="team-member">
-                                <div class="member-name">Dr. Sarah Chen</div>
-                                <div class="member-role">AI/ML Lead</div>
-                                <div class="member-email">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                        <polyline points="22,6 12,13 2,6"/>
-                                    </svg>
-                                    sarah.chen@metro.ai
-                                </div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">Sarvesh Barale</div>
+                                <div style="color: var(--primary-color); font-weight: 500;">AI/ML Lead</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">202401120071@mitaoe.ac.in</div>
                             </div>
                             <div class="team-member">
-                                <div class="member-name">James Rodriguez</div>
-                                <div class="member-role">Full Stack Developer</div>
-                                <div class="member-email">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                        <polyline points="22,6 12,13 2,6"/>
-                                    </svg>
-                                    james.r@metro.ai
-                                </div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">Anushka Kannawar</div>
+                                <div style="color: var(--primary-color); font-weight: 500;">Full Stack Developer</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">202401120017@mitaoe.ac.in</div>
                             </div>
                             <div class="team-member">
-                                <div class="member-name">Priya Sharma</div>
-                                <div class="member-role">Data Scientist</div>
-                                <div class="member-email">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                        <polyline points="22,6 12,13 2,6"/>
-                                    </svg>
-                                    priya.s@metro.ai
-                                </div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">Himani Bhurkunde</div>
+                                <div style="color: var(--primary-color); font-weight: 500;">UI/UX Designer</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">202401120076@mitaoe.ac.in</div>
                             </div>
                             <div class="team-member">
-                                <div class="member-name">Alex Kim</div>
-                                <div class="member-role">UX/UI Designer</div>
-                                <div class="member-email">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                        <polyline points="22,6 12,13 2,6"/>
-                                    </svg>
-                                    alex.k@metro.ai
-                                </div>
+                                <div style="font-weight: 700; font-size: 1.1rem;">Kedar Jasud</div>
+                                <div style="color: var(--primary-color); font-weight: 500;">Data Scientist</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">202401120001@mitaoe.ac.in</div>
                             </div>
                         </div>
                     </div>
@@ -621,15 +338,15 @@ Training Metrics:
                         <form class="contact-form" id="contactForm">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" placeholder="Your name">
+                                <input type="text" id="contactName" placeholder="Your name" required>
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" placeholder="your.email@example.com">
+                                <input type="email" id="contactEmail" placeholder="your.email@example.com" required>
                             </div>
                             <div class="form-group">
                                 <label>Message</label>
-                                <textarea rows="4" placeholder="Your message..."></textarea>
+                                <textarea id="contactMessage" rows="4" placeholder="Your message..." required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Send Message</button>
                         </form>
@@ -639,24 +356,38 @@ Training Metrics:
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">
-                    <div class="logo-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="8" width="18" height="12" rx="2"/>
-                            <path d="M3 14h18"/>
-                        </svg>
-                    </div>
-                    <span>Metro Intelligence</span>
-                </div>
-                <p class="footer-desc">AI-Powered Urban Transit Management System</p>
-                <p class="footer-copy">© 2026 Metro Intelligence. All rights reserved.</p>
+                <p class="footer-copy">© 2026 Kochi Metro Intelligence. Developed by Team MITAOE.</p>
             </div>
         </div>
     </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2 style="margin-bottom: 1.5rem;">System Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>User ID / Email</label>
+                    <input type="text" id="username" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="admin123" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="userRole">
+                        <option value="user">Station Manager</option>
+                        <option value="admin">Super Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
