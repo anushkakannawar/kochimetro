@@ -315,6 +315,10 @@ function initializeApp() {
     if (journeyForm) journeyForm.addEventListener('submit', handleJourneyForm);
     const contactForm = document.getElementById('contactForm');
     if (contactForm) contactForm.addEventListener('submit', (e) => { e.preventDefault(); alert("Message Sent!"); });
+    
+    // Ensure login UI is correct on start (button hidden)
+    updateLoginUI();
+    
     showPage('home');
 }
 
@@ -358,6 +362,14 @@ if (document.readyState === 'loading') {
 let currentUser = null;
 let currentAiPrediction = 0;
 
+// --- SECRET KEYBOARD LISTENER ---
+// Press Ctrl + Alt + L to open the login modal
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'l') {
+        openLoginModal();
+    }
+});
+
 function openLoginModal() {
     document.getElementById('loginModal').style.display = 'block';
 }
@@ -377,17 +389,16 @@ const loginForm = document.getElementById('loginForm');
 if(loginForm) {
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        const role = document.getElementById('userRole').value;
-        if (user === 'admin' && pass === 'admin123' && role === 'admin') {
+        
+        // ADD .trim() HERE to remove accidental spaces
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        
+        // We can also remove the 'role' line since that dropdown was removed from HTML
+        
+        if (user === 'admin' && pass === 'admin123') {
             currentUser = { name: 'Admin User', role: 'admin' };
             loginSuccess();
-        } else if (user === 'user' && pass === 'user123') {
-            currentUser = { name: 'Station Master', role: 'user' };
-            alert("Logged in as Station Master. View-only access.");
-            closeLoginModal();
-            updateLoginUI();
         } else {
             alert("Invalid Credentials! (Try: admin / admin123)");
         }
@@ -404,34 +415,43 @@ function loginSuccess() {
 
 function updateLoginUI() {
     const btn = document.getElementById('loginBtn');
+    if(!btn) return;
+    
     if (currentUser) {
+        // User is logged in: Show button as LOGOUT
         btn.textContent = `Logout (${currentUser.role})`;
+        btn.style.display = 'block';
         btn.onclick = logout;
     } else {
-        btn.textContent = 'Login';
-        btn.onclick = openLoginModal;
+        // User is logged out: HIDE the button completely
+        btn.style.display = 'none';
     }
 }
 
 function logout() {
     currentUser = null;
-    const adminInterface = document.getElementById('adminInterface');
-    const adminLocked = document.getElementById('adminLockedMsg');
-    if(adminInterface) adminInterface.style.display = 'none';
-    if(adminLocked) adminLocked.style.display = 'block';
+    
+    // Hide the entire Admin Panel Card
+    const panel = document.getElementById('adminControlPanel');
+    if(panel) panel.style.display = 'none';
+
     updateLoginUI();
     alert("Logged Out.");
 }
 
 function renderAdminPanel() {
+    // Only run if user is admin
     if (currentUser && currentUser.role === 'admin') {
-        const adminLocked = document.getElementById('adminLockedMsg');
-        const adminInterface = document.getElementById('adminInterface');
-        if(adminLocked) adminLocked.style.display = 'none';
-        if(adminInterface) adminInterface.style.display = 'block';
+        const panel = document.getElementById('adminControlPanel');
+        const interfaceDiv = document.getElementById('adminInterface');
+        
+        // Show the entire card
+        if(panel) panel.style.display = 'block';
+        
+        // Ensure the content inside is visible
+        if(interfaceDiv) interfaceDiv.style.display = 'block';
     }
 }
-
 function generateAiPrediction() {
     const statusText = document.getElementById('aiReasoning');
     const valueText = document.getElementById('aiPredictedValue');

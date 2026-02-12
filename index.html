@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="nav-actions">
-                    <button id="loginBtn" class="btn btn-sm" onclick="openLoginModal()" style="margin-right: 10px; border: 1px solid var(--card-border); padding: 0.5rem 1rem; background: transparent; color: var(--text-primary);">Login</button>
+                    <button id="loginBtn" class="btn btn-sm" style="display: none; margin-right: 10px; border: 1px solid var(--card-border); padding: 0.5rem 1rem; background: transparent; color: var(--text-primary);"></button>
                     
                     <button class="theme-toggle" onclick="toggleTheme()">
                         <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -184,42 +184,19 @@
                     </div>
                 </div>
 
-                <div class="card" id="adminControlPanel">
+                <div class="card" id="adminControlPanel" style="display: none;">
                     <h2 class="card-title">AI Scheduler Admin Panel</h2>
-                    
-                    <div id="adminLockedMsg" style="text-align: center; padding: 2rem;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-secondary); margin-bottom: 1rem;">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Admin access required to modify train frequency.</p>
-                        <button class="btn btn-primary" onclick="openLoginModal()">Login as Admin</button>
-                    </div>
-
-                    <div id="adminInterface" style="display: none;">
+                    <div id="adminInterface">
                         <div class="ai-decision-box">
                             <div class="prediction-display">
-                                <span class="label" style="color:var(--text-secondary); font-size: 0.9rem;">AI Suggested Headway</span>
+                                <span class="label">AI Suggested Headway</span>
                                 <span class="value" id="aiPredictedValue">-- mins</span>
                             </div>
-                            
-                            <div class="prediction-status">
-                                <p id="aiReasoning">Analyzing real-time passenger density...</p>
-                            </div>
-
+                            <div class="prediction-status"><p id="aiReasoning">Analyzing real-time passenger density...</p></div>
                             <div class="action-buttons">
-                                <button class="btn btn-danger" onclick="rejectPrediction()">
-                                    Disagree (Re-predict)
-                                </button>
-                                <button class="btn btn-success" onclick="approvePrediction()" style="background-color: var(--success-color); color: white; border: none;">
-                                    Agree (Apply)
-                                </button>
+                                <button class="btn btn-danger" onclick="rejectPrediction()">Disagree</button>
+                                <button class="btn btn-success" onclick="approvePrediction()">Approve</button>
                             </div>
-                        </div>
-
-                        <div class="current-stats" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--card-border);">
-                            <div style="font-size: 0.9rem; color: var(--text-secondary);">Current System Status:</div>
-                            <div style="font-weight: bold; color: var(--primary-color);" id="currentSystemFreq">Running at 7 min intervals</div>
                         </div>
                     </div>
                 </div>
@@ -367,22 +344,15 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeLoginModal()">&times;</span>
-            <h2 style="margin-bottom: 1.5rem;">System Login</h2>
-            <form id="loginForm">
+            <h2>System Authorization</h2>
+            <form id="loginForm" style="margin-top: 1.5rem;">
                 <div class="form-group">
-                    <label>User ID / Email</label>
+                    <label>Admin ID</label>
                     <input type="text" id="username" placeholder="admin" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="password" placeholder="admin123" required>
-                </div>
-                <div class="form-group">
-                    <label>Role</label>
-                    <select id="userRole">
-                        <option value="user">Station Manager</option>
-                        <option value="admin">Super Admin</option>
-                    </select>
+                    <input type="password" id="password" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
             </form>
